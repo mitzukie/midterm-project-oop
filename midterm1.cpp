@@ -2,8 +2,12 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <limits>
+#include <iomanip>
 
 using namespace std;
+
+int nextProductID = 1; // Global counter for unique product IDs
 
 class Item{
     private:
@@ -14,7 +18,7 @@ class Item{
 
     public:
     //Constructor
-    Item() : productID(0), name(""), quantity(0), price(0.0){}
+        Item() : productID(0), name(""), quantity(0), price(0.0){}
 
     //Setters
     
@@ -52,11 +56,12 @@ class Item{
         }
 
     //Display
-        void display(){
-            cout << "Product ID: "<<getProductID()<<endl;
-            cout << "Item Name: "<<getName()<<endl;
-            cout << "Quantity: "<<getQuantity()<<endl;
-            cout << "Price: $"<<getPrice()<<endl;
+        void display() const {
+            cout << left << setw(12) << productID
+                 << setw(20) << name
+                 << setw(12) << quantity
+                 << fixed << setprecision(2) << setw(12) << price
+                 << endl;
         }   
         
     //Add Item
@@ -73,22 +78,71 @@ class Item{
             setQuantity(quantity);
             setPrice(price);
         }
-     
-    //Remove Item    
+        
 };
+    //Validate Input for Integer
+        int validatePositiveInteger(const string& prompt) {
+            int value;
+            while (true) {
+                cout << prompt;
+                cin >> value;
 
-    void displayMenu(){
-        cout<<"Menu"<<endl;
-        cout<<"1 - Add Item"<<endl;
-        cout<<"2 - Update Item"<<endl;
-        cout<<"3 - Remove Item"<<endl;
-        cout<<"4 - Display All Items"<<endl;
-        cout<<"5 - Search Item"<<endl;
-        cout<<"6 - Sort Items"<<endl;
-        cout<<"7 - Display Low Stock Items"<<endl;
-        cout<<"8 - Exit"<<endl;
-    }
+                // Check if input is valid and positive
+                if (cin.fail() || value <= 0) {
+                    cin.clear(); // Clear the error flag
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore invalid input
+                    cout << "Invalid input. Please input a positive integer." << endl;
+                } else {
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+                    return value; // Return valid input
+                }
+            }
+        }
 
+    //Validate Input for Double   
+        double validatePositiveDouble(const string& prompt) {
+            double value;
+            while (true) {
+                cout << prompt;
+                cin >> value;
+
+                // Check if input is valid and positive
+                if (cin.fail() || value <= 0.0) {
+                    cin.clear(); // Clear the error flag
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore invalid input
+                    cout << "Invalid input. Please enter a positive number." << endl;
+                } else {
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+                    return value; // Return valid input
+                }
+            }
+        }
+
+    //Menu
+        void displayMenu(){
+            cout<<endl;
+            cout<<"Menu"<<endl;
+            cout<<"1 - Add Item"<<endl;
+            cout<<"2 - Update Item"<<endl;
+            cout<<"3 - Remove Item"<<endl;
+            cout<<"4 - Display All Items"<<endl;
+            cout<<"5 - Search Item"<<endl;
+            cout<<"6 - Sort Items"<<endl;
+            cout<<"7 - Display Low Stock Items"<<endl;
+            cout<<"8 - Exit"<<endl;
+        }
+
+    //Display Table Header
+        void displayTableHeader() {
+            cout << left << setw(12) << "Product ID"
+                 << setw(20) << "Item Name"
+                 << setw(12) << "Quantity"
+                 << setw(12) << "Price"
+                 << endl;
+            cout << string(56, '-') << endl; // Print a separator line
+        }
+
+    
 int main(){
 
     vector<Item> items;
@@ -103,68 +157,73 @@ int main(){
 
     while(condition == 0){
         displayMenu();
-        cin>>choice;
+        choice = validatePositiveInteger("Enter Menu Choice: ");
 
         switch(choice){
-            case 1:{
+            case 1: {
                 cin.ignore();
-                cout<<"Enter Item Name: ";
+                cout << "Enter Item Name: ";
                 getline(cin, name);
-                cout<<"Enter Item Quantity: ";
-                cin>>quantity;
-                cin.ignore();
-                cout<<"Enter Item Price:";
-                cin>>price;
-                cin.ignore();
 
-                productID = items.size() + 1;
+                // Validate quantity and price
+                quantity = validatePositiveInteger("Enter Item Quantity: ");
+                price = validatePositiveDouble("Enter Item Price: ");
 
-                Item newItem; 
-                newItem.addItem(name,quantity,price,productID);
+                productID = nextProductID++;
+
+                Item newItem;
+                newItem.addItem(name, quantity, price, productID);
 
                 items.push_back(newItem);
 
-                cout<<"Item added successfully with Product ID: "<<productID<<endl;
-            break;
+                cout << "Item added successfully with Product ID: " << productID << endl;
+                break;
             }
-            case 2:{
-                cout<<"Input Item ID: ";
-                cin>>productID;
-                cin.ignore(); // Ignore leftover newline character
-                
+            case 2: {
+                if (items.empty()) {
+                    cout << "There are no items yet." << endl;
+                }
+
+                cout << "Input Item ID: ";
+                cin >> productID;
+                cin.ignore(); 
+
                 //check if id exists
                 bool found = false;
 
-                for(size_t i = 0; i < items.size(); i++){
-                    if(items[i].getProductID() == productID){
+                for (size_t i = 0; i < items.size(); i++) {
+                    if (items[i].getProductID() == productID) {
                         found = true;
 
                         items[i].display();
 
-                        cin.ignore(); // Ignore leftover newline character
-                        cout<<"Enter New Item Name: ";
+                        cin.ignore();
+                        cout << "Enter New Item Name: ";
                         getline(cin, name);
-                        cout<<"Enter New Item Quantity: ";
-                        cin>>quantity;
-                        cout<<"Enter New Item Price: $";
-                        cin>>price;
 
-                        items[i].update(name,quantity,price);
+                        // Validate quantity and price
+                        quantity = validatePositiveInteger("Enter New Item Quantity: ");
+                        price = validatePositiveDouble("Enter New Item Price: ");
 
-                        cout<<"Item details updated successfully!"<<endl;
+                        items[i].update(name, quantity, price);
+
+                        cout << "Item details updated successfully!" << endl;
 
                         break;
                     }
-
                 }
 
-                if (!found){
-                    cout<<"Product Id "<<productID <<" not found."<<endl;
+                if (!found) {
+                    cout << "Item not found!" << endl;
                 }
 
                 break;
             }
             case 3:{
+                if (items.empty()) {
+                    cout << "There are no items yet." << endl;
+                }
+
                 cout<<"Input Product ID to remove: ";
                 cin>>productID;
 
@@ -175,32 +234,33 @@ int main(){
                         found = true;
 
                         items.erase(items.begin() + i);
-                        cout<<"Item with Product ID" <<productID<<" removed successfully."<<endl;
+                        cout<<"Item "<<name<<" has been removed from the inventory."<<endl;
                         break;
                     }
                 }
 
                 if (!found){
-                    cout<<"Product ID "<<productID<<" does not exist."<<endl;
+                    cout<<"Item not found!"<<endl;
                 }
                 break;
             }
-            case 4:{
-                if(items.empty()){
-                    cout<<"No items are available to display."<<endl;
-                }
-
-                else{
-                    cout<<"Displaying all items:"<<endl;
-                        for(size_t i = 0; i < items.size(); i++){
-                            cout<<"Item "<<i+1<<":"<<endl;
-                            items[i].display();
-                            cout<<endl;
-                        }
+            case 4: {
+                if (items.empty()) {
+                    cout << "No items are available to display." << endl;
+                } 
+                else {
+                    displayTableHeader(); // Print the table header
+                    for (size_t i = 0; i < items.size(); i++) {
+                        items[i].display(); // Print each item as a table row
+                    }
                 }
                 break;
             }
             case 5:{
+                if (items.empty()) {
+                    cout << "There are no items yet." << endl;
+                }
+
                 cout<<"Enter Product ID to search: ";
                 cin>>productID;
 
@@ -211,6 +271,7 @@ int main(){
                         found = true;
 
                         cout<<"Item found: "<<endl;
+                        displayTableHeader();
                         items[i].display();
                         
                         break;
@@ -218,12 +279,16 @@ int main(){
                 }
 
                 if(!found){
-                    cout<<"Product ID "<<productID<<" does not exist."<<endl;
+                    cout<<"Item not found!"<<endl;
                 }
 
                 break;
             }
             case 6: {
+                if (items.empty()) {
+                    cout << "There are no items yet." << endl;
+                }
+
                 int sortChoice, orderChoice;
 
                 // Ask for sorting criteria
@@ -267,8 +332,8 @@ int main(){
 
                 // Display sorted items
                 cout << "Sorted items:" << endl;
+                displayTableHeader();
                 for (size_t i = 0; i < items.size(); i++) {
-                    cout << "Item " << i + 1 << ":" << endl;
                     items[i].display();
                     cout << endl;
                 }
@@ -276,10 +341,15 @@ int main(){
                 break;
             }
             case 7:{
+                if (items.empty()) {
+                    cout << "There are no items yet." << endl;
+                }
+
                 cout<<"Low Stock Items: "<<endl;
 
                 bool found = false;
 
+                displayTableHeader();
                 for(size_t i = 0; i < items.size(); i++){
                     if(items[i].getQuantity() <= 5){
                         found = true;
@@ -297,6 +367,9 @@ int main(){
                 cout<<"Exiting Program.."<<endl;
                 condition = 1;
                 break;
+            }
+            default:{
+                cout<<"Invalid choice. Please select a valid option from the given menu."<<endl;
             }
         }
     }
