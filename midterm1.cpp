@@ -1,3 +1,4 @@
+//Made by Mike Miras, IT2A    
 #include <iostream>
 #include <vector>
 #include <string>
@@ -11,6 +12,7 @@ int nextProductID = 1; // Global counter for unique product IDs
 
 class Item{
     private:
+    //Item attributes
         int productID;
         string name;
         int quantity;
@@ -55,7 +57,7 @@ class Item{
             return price;
         }
 
-    //Display
+    //Display Items
         void display() const {
             cout << left << setw(12) << productID
                  << setw(20) << name
@@ -145,6 +147,7 @@ class Item{
     
 int main(){
 
+    //Initialize vector object 'items' of class Item
     vector<Item> items;
 
 
@@ -155,11 +158,13 @@ int main(){
 
     int condition = 0;
 
+    //Loop for Display Menu until user chooses to terminate program
     while(condition == 0){
         displayMenu();
         choice = validatePositiveInteger("Enter Menu Choice: ");
 
         switch(choice){
+            //Add Item option
             case 1: {
                 cin.ignore();
                 cout << "Enter Item Name: ";
@@ -171,6 +176,8 @@ int main(){
 
                 productID = nextProductID++;
 
+                //New local object of class 'Item' to temporarily store 
+                //data before being added to the 'items' vector
                 Item newItem;
                 newItem.addItem(name, quantity, price, productID);
 
@@ -179,6 +186,7 @@ int main(){
                 cout << "Item added successfully with Product ID: " << productID << endl;
                 break;
             }
+            //Update Item option
             case 2: {
                 if (items.empty()) {
                     cout << "There are no items yet." << endl;
@@ -212,13 +220,14 @@ int main(){
                         break;
                     }
                 }
-
+                //if ID not found
                 if (!found) {
                     cout << "Item not found!" << endl;
                 }
 
                 break;
             }
+            //Remove Item option
             case 3:{
                 if (items.empty()) {
                     cout << "There are no items yet." << endl;
@@ -244,6 +253,7 @@ int main(){
                 }
                 break;
             }
+            //Display All Items option
             case 4: {
                 if (items.empty()) {
                     cout << "No items are available to display." << endl;
@@ -256,6 +266,7 @@ int main(){
                 }
                 break;
             }
+            //Search Item option
             case 5:{
                 if (items.empty()) {
                     cout << "There are no items yet." << endl;
@@ -284,6 +295,7 @@ int main(){
 
                 break;
             }
+            //Sort Items option
             case 6: {
                 if (items.empty()) {
                     cout << "There are no items yet." << endl;
@@ -340,6 +352,7 @@ int main(){
 
                 break;
             }
+            //Display Low Stock Items option
             case 7:{
                 if (items.empty()) {
                     cout << "There are no items yet." << endl;
@@ -363,11 +376,13 @@ int main(){
                 }
                 break;
             }
+            //Terminate Program
             case 8:{
                 cout<<"Exiting Program.."<<endl;
                 condition = 1;
                 break;
             }
+            //if 'choice' != 1 to 8
             default:{
                 cout<<"Invalid choice. Please select a valid option from the given menu."<<endl;
             }
