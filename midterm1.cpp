@@ -143,6 +143,15 @@ class Item{
                  << endl;
             cout << string(56, '-') << endl; // Print a separator line
         }
+    
+    //Check if Items are Empty
+        bool checkIfItemsEmpty(const vector<Item>& items, const string& emptyMessage) {
+            if (items.empty()) {
+                cout << endl << emptyMessage << endl;
+                return true;
+            }
+            return false;
+        }
 
     
 int main(){
@@ -188,10 +197,8 @@ int main(){
             }
             //Update Item option
             case 2: {
-                if (items.empty()) {
-                    cout << "There are no items yet." << endl;
-                }
-
+                if (checkIfItemsEmpty(items, "There are no items yet.")) {break;}
+                
                 cout << "Input Item ID: ";
                 cin >> productID;
                 cin.ignore(); 
@@ -229,9 +236,7 @@ int main(){
             }
             //Remove Item option
             case 3:{
-                if (items.empty()) {
-                    cout << "There are no items yet." << endl;
-                }
+                if (checkIfItemsEmpty(items, "There are no items yet.")) {break;}
 
                 cout<<"Input Product ID to remove: ";
                 cin>>productID;
@@ -241,9 +246,10 @@ int main(){
                 for(size_t i = 0; i < items.size(); i++){
                     if(items[i].getProductID() == productID){
                         found = true;
-
+                        
+                        string itemName = items[i].getName();
                         items.erase(items.begin() + i);
-                        cout<<"Item "<<name<<" has been removed from the inventory."<<endl;
+                        cout<<"Item "<<itemName<<" has been removed from the inventory."<<endl;
                         break;
                     }
                 }
@@ -255,9 +261,8 @@ int main(){
             }
             //Display All Items option
             case 4: {
-                if (items.empty()) {
-                    cout << "No items are available to display." << endl;
-                } 
+                if (checkIfItemsEmpty(items, "No items are available to display.")) {break;}
+
                 else {
                     displayTableHeader(); // Print the table header
                     for (size_t i = 0; i < items.size(); i++) {
@@ -268,9 +273,7 @@ int main(){
             }
             //Search Item option
             case 5:{
-                if (items.empty()) {
-                    cout << "There are no items yet." << endl;
-                }
+                if (checkIfItemsEmpty(items, "There are no items yet.")) {break;}
 
                 cout<<"Enter Product ID to search: ";
                 cin>>productID;
@@ -297,9 +300,7 @@ int main(){
             }
             //Sort Items option
             case 6: {
-                if (items.empty()) {
-                    cout << "There are no items yet." << endl;
-                }
+                if (checkIfItemsEmpty(items, "There are no items yet.")) {break;}
 
                 int sortChoice, orderChoice;
 
@@ -331,7 +332,7 @@ int main(){
 
                 // Perform sorting based on user input
                 if (sortChoice == 1) { // Sort by Quantity
-                    sort(items.begin(), items.end(), [orderChoice](const Item& a, const Item& b) {
+                    sort(items.begin(), items.end(), [orderChoice](const Item& a, const Item& b) {   
                         return (orderChoice == 1) ? (a.getQuantity() < b.getQuantity()) : (a.getQuantity() > b.getQuantity());
                     });
                 } else if (sortChoice == 2) { // Sort by Price
@@ -354,9 +355,7 @@ int main(){
             }
             //Display Low Stock Items option
             case 7:{
-                if (items.empty()) {
-                    cout << "There are no items yet." << endl;
-                }
+                if (checkIfItemsEmpty(items, "There are no items yet.")) {break;}
 
                 cout<<"Low Stock Items: "<<endl;
 
@@ -384,6 +383,7 @@ int main(){
             }
             //if 'choice' != 1 to 8
             default:{
+                cout<<endl;
                 cout<<"Invalid choice. Please select a valid option from the given menu."<<endl;
             }
         }
